@@ -1,7 +1,9 @@
 package fr.alternants.Multisweeper.game.core;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
+@Accessors(chain = true)
 @Data
 public class Cell { // Default value : 0, null, false
 

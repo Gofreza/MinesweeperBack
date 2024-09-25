@@ -43,6 +43,7 @@ public class Multisweeper {
     private int bombsExplosion;
     private int cellsRevealed;
     private int nbBombs;
+    private int nbFlags;
 
 
     public Multisweeper(int rows, int cols, boolean isMultiplayer, Difficulty difficulty) {
@@ -66,6 +67,7 @@ public class Multisweeper {
         bombsDefused = 0;
         bombsExplosion = 0;
         cellsRevealed = 0;
+        this.nbFlags = 0;
 
         initBombs();
     }
@@ -96,11 +98,31 @@ public class Multisweeper {
     }
 
 
+    private void propagate(int row, int col, List<PlayResponse.CellResponse> responses) {
+        grid[row][col].setVisible(true);
+        cellsRevealed++;
+        responses.add(new PlayResponse.CellResponse(row, col, grid[row][col]));
+
+        if (grid[row][col].getBombAround() == 0) for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                int newRow = row + i;
+                int newCol = col + j;
+                if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols) {
+                    if (!grid[newRow][newCol].isVisible() && !grid[newRow][newCol].isFlagged()) {
+                        propagate(newRow, newCol, responses);
+                    }
+                }
+            }
+        }
+    }
+
+
     public List<PlayResponse.CellResponse> play(int row, int col) {
         List<PlayResponse.CellResponse> responses = new ArrayList<>();
         Cell cell = grid[row][col];
 
-        if (cell.isBomb()) {
+        if(cell.isVisible() || cell.isFlagged()) return responses; // Already played or can't play
+        else if (cell.isBomb()) {
             cell.setExplosed(true); // Loose
             cell.setVisible(true);
             bombsExplosion++;
@@ -114,24 +136,42 @@ public class Multisweeper {
         return responses;
     }
 
-    private void propagate(int row, int col, List<PlayResponse.CellResponse> responses) {
-        grid[row][col].setVisible(true);
-        cellsRevealed++;
-        responses.add(new PlayResponse.CellResponse(row, col, grid[row][col]));
+    public boolean flag(int row, int col){
+        Cell cell = grid[row][col];
+        if(cell.isVisible()) return false; // Can't flag a visible cell
 
-        if (grid[row][col].getBombAround() == 0) for (int i = -1; i <= 1; i++) {
-            for (int j = -1; j <= 1; j++) {
-                int newRow = row + i;
-                int newCol = col + j;
-                if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols) {
-                    if (!grid[newRow][newCol].isVisible()) {
-                        propagate(newRow, newCol, responses);
-                    }
+        cell.setFlagged(!cell.isFlagged());
+        if(cell.isFlagged()) nbFlags++;
+        else nbFlags--;
+
+        return cell.isFlagged();
+    }
+
+    public List<PlayResponse.CellResponse> getVisibleGrid() {
+        List<PlayResponse.CellResponse> responses = new ArrayList<>();
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                if (grid[r][c].isVisible()) {
+                    responses.add(new PlayResponse.CellResponse(r, c, grid[r][c]));
+                } else if (grid[r][c].isFlagged()) {
+                    responses.add(new PlayResponse.CellResponse(r, c, new Cell().setFlagged(true)));
                 }
             }
         }
+        return responses;
     }
 
+    public void checkGameWin() {
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                if (!grid[r][c].isVisible() && !grid[r][c].isBomb()) {
+                    return;
+                }
+            }
+        }
+        isGameWin = true;
+        isGameEnded = true;
+    }
 
     @Override
     public String toString() {
@@ -158,15 +198,6 @@ public class Multisweeper {
         return sb.toString();
     }
 
-    public void checkGameWin() {
-        for (int r = 0; r < rows; r++) {
-            for (int c = 0; c < cols; c++) {
-                if (!grid[r][c].isVisible() && !grid[r][c].isBomb()) {
-                    return;
-                }
-            }
-        }
-        isGameWin = true;
-        isGameEnded = true;
-    }
+
+
 }

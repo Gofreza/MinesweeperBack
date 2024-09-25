@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/game")
 @CrossOrigin(origins = "http://localhost:5173")
@@ -22,5 +24,17 @@ public class GameController {
     public ResponseEntity<PlayResponse> play(@RequestBody PlayRequest playRequest) {
         System.out.println("Play request: " + playRequest);
         return gameService.play(playRequest);
+    }
+
+    @PostMapping("/flag")
+    public ResponseEntity<Boolean> flag(@RequestBody PlayRequest playRequest) {
+        System.out.println("Flag request: " + playRequest);
+        return gameService.flag(playRequest);
+    }
+
+    @GetMapping()
+    public ResponseEntity<List<PlayResponse.CellResponse>> getGrid(@RequestBody Long roomId) {
+        System.out.println("Get grid, roomId: " + roomId);
+        return gameService.getGrid(roomId);
     }
 }

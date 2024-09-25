@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 
 @Service
@@ -18,10 +19,9 @@ public class GameService {
 
     public ResponseEntity<Long> newGame(NewGameRequest newGameRequest) {
         Long roomId;
-        if(newGameRequest.getIsMultiplayer()) {
+        if (newGameRequest.getIsMultiplayer()) {
             return null;
-        }
-        else{
+        } else {
             roomId = newSoloGame(newGameRequest);
         }
 
@@ -35,14 +35,30 @@ public class GameService {
     }
 
     public ResponseEntity<PlayResponse> play(PlayRequest playRequest) {
-         if(playRequest.getPlayerId() != null){
-             Multisweeper multisweeper = soloGames.get(playRequest.getRoomId());
-             PlayResponse playResponse = new PlayResponse();
-             playResponse.setChangedCells(multisweeper.play(playRequest.getRow(), playRequest.getCol()));
-             multisweeper.checkGameWin();
-             playResponse.setIsGameWin(multisweeper.isGameWin());
-             playResponse.setIsGameEnded(multisweeper.isGameEnded());
-         }
+        if (playRequest.getPlayerId() != null) {
+            Multisweeper multisweeper = soloGames.get(playRequest.getRoomId());
+            PlayResponse playResponse = new PlayResponse();
+            playResponse.setChangedCells(multisweeper.play(playRequest.getRow(), playRequest.getCol()));
+            multisweeper.checkGameWin();
+            playResponse.setIsGameWin(multisweeper.isGameWin());
+            playResponse.setIsGameEnded(multisweeper.isGameEnded());
+        }
+        return ResponseEntity.badRequest().build();
+    }
+
+    public ResponseEntity<Boolean> flag(PlayRequest playRequest) {
+        if (playRequest.getPlayerId() != null) {
+            Multisweeper multisweeper = soloGames.get(playRequest.getRoomId());
+            return ResponseEntity.ok(multisweeper.flag(playRequest.getRow(), playRequest.getCol()));
+        }
+        return ResponseEntity.badRequest().build();
+    }
+
+    public ResponseEntity<List<PlayResponse.CellResponse>> getGrid(Long roomId) {
+        if (soloGames.containsKey(roomId)) {
+            Multisweeper multisweeper = soloGames.get(roomId);
+            return ResponseEntity.ok(multisweeper.getVisibleGrid());
+        }
         return ResponseEntity.badRequest().build();
     }
 }
