@@ -12,13 +12,13 @@ import java.util.Random;
 @Service
 @RequiredArgsConstructor
 public class GameService {
-    private HashMap<Long, Multisweeper> soloGames = new HashMap<>();
+    private HashMap<Integer, Multisweeper> soloGames = new HashMap<>();
 
     private Random rand = new Random();
 
 
-    public ResponseEntity<Long> newGame(NewGameRequest newGameRequest) {
-        Long roomId;
+    public ResponseEntity<Integer> newGame(NewGameRequest newGameRequest) {
+        Integer roomId;
         if (newGameRequest.getIsMultiplayer()) {
             return null;
         } else {
@@ -28,8 +28,8 @@ public class GameService {
         return ResponseEntity.ok(roomId);
     }
 
-    public Long newSoloGame(NewGameRequest newGameRequest) {
-        Long roomId = rand.nextLong();
+    public Integer newSoloGame(NewGameRequest newGameRequest) {
+        Integer roomId = rand.nextInt();
         soloGames.put(roomId, new Multisweeper(newGameRequest.getRows(), newGameRequest.getCols(), newGameRequest.getIsMultiplayer(), newGameRequest.getDifficulty()));
         return roomId;
     }

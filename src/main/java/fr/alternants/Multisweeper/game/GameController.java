@@ -15,7 +15,7 @@ public class GameController {
     private final GameService gameService;
 
     @PostMapping("/new")
-    public ResponseEntity<Long> newGame(@RequestBody NewGameRequest newGameRequest) {
+    public ResponseEntity<Integer> newGame(@RequestBody NewGameRequest newGameRequest) {
         System.out.println("New game request: " + newGameRequest);
         return gameService.newGame(newGameRequest);
     }

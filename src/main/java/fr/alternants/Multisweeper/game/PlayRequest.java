@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 public class PlayRequest {
     private Integer row;
     private Integer col;
-    private Long roomId;
-    private Long playerId;
+    private Integer roomId;
+    private Integer playerId;
 }
