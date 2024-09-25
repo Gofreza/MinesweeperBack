@@ -23,6 +23,7 @@ public class GameService {
             return null;
         } else {
             roomId = newSoloGame(newGameRequest);
+            System.out.println("New solo game created with roomId: " + roomId);
         }
 
         return ResponseEntity.ok(roomId);
@@ -35,13 +36,14 @@ public class GameService {
     }
 
     public ResponseEntity<PlayResponse> play(PlayRequest playRequest) {
-        if (playRequest.getPlayerId() != null) {
+        if (playRequest.getPlayerId() == null) {
             Multisweeper multisweeper = soloGames.get(playRequest.getRoomId());
             PlayResponse playResponse = new PlayResponse();
             playResponse.setChangedCells(multisweeper.play(playRequest.getRow(), playRequest.getCol()));
             multisweeper.checkGameWin();
             playResponse.setIsGameWin(multisweeper.isGameWin());
             playResponse.setIsGameEnded(multisweeper.isGameEnded());
+            return ResponseEntity.ok(playResponse);
         }
         return ResponseEntity.badRequest().build();
     }
