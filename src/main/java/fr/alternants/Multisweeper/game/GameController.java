@@ -14,11 +14,13 @@ public class GameController {
 
     @PostMapping("/new")
     public ResponseEntity<Long> newGame(@RequestBody NewGameRequest newGameRequest) {
+        System.out.println("New game request: " + newGameRequest);
         return gameService.newGame(newGameRequest);
     }
 
     @PostMapping("/play")
     public ResponseEntity<PlayResponse> play(@RequestBody PlayRequest playRequest) {
+        System.out.println("Play request: " + playRequest);
         return gameService.play(playRequest);
     }
 }
