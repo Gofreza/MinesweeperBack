@@ -136,15 +136,18 @@ public class Multisweeper {
         return responses;
     }
 
-    public boolean flag(int row, int col){
+    public PlayResponse.CellResponse flag(int row, int col){
         Cell cell = grid[row][col];
-        if(cell.isVisible()) return false; // Can't flag a visible cell
+        if(cell.isVisible()) return new PlayResponse.CellResponse(row, col, cell); // Can't flag a visible cell
 
         cell.setFlagged(!cell.isFlagged());
-        if(cell.isFlagged()) nbFlags++;
-        else nbFlags--;
-
-        return cell.isFlagged();
+        if(cell.isFlagged()) {
+            nbFlags++;
+            return new PlayResponse.CellResponse(row, col, new Cell().setFlagged(true));
+        } else {
+            nbFlags--;
+            return new PlayResponse.CellResponse(row, col, new Cell());
+        }
     }
 
     public List<PlayResponse.CellResponse> getVisibleGrid() {
