@@ -1,6 +1,5 @@
 package fr.alternants.Multisweeper.game;
 
-import fr.alternants.Multisweeper.game.core.Cell;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +39,7 @@ public class GameController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<PlayResponse.CellResponse>> getGrid(@RequestBody Long roomId) {
+    public ResponseEntity<List<PlayResponse.CellResponse>> getGrid(@RequestBody Integer roomId) {
         System.out.println("Get grid, roomId: " + roomId);
         List<PlayResponse.CellResponse> cellResponses = gameService.getGrid(roomId);
         if(cellResponses == null) return ResponseEntity.badRequest().build();

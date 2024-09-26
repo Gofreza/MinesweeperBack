@@ -11,9 +11,9 @@ import java.util.Random;
 @Service
 @RequiredArgsConstructor
 public class GameService {
-    private HashMap<Integer, Multisweeper> soloGames = new HashMap<>();
+    private final HashMap<Integer, Multisweeper> soloGames = new HashMap<>();
 
-    private Random rand = new Random();
+    private final Random rand = new Random();
 
 
     public Integer newGame(NewGameRequest newGameRequest) {
@@ -55,7 +55,7 @@ public class GameService {
         return null;
     }
 
-    public List<PlayResponse.CellResponse> getGrid(Long roomId) {
+    public List<PlayResponse.CellResponse> getGrid(Integer roomId) {
         if (soloGames.containsKey(roomId)) {
             Multisweeper multisweeper = soloGames.get(roomId);
             return multisweeper.getVisibleGrid();
