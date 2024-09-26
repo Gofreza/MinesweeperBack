@@ -117,6 +117,30 @@ public class Multisweeper {
         return cell;
     }
 
+    private List<PlayResponse.CellResponse> getVisibleGrid() {
+        List<PlayResponse.CellResponse> responses = new ArrayList<>();
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                if (grid[r][c].isVisible()) {
+                    responses.add(new PlayResponse.CellResponse(r, c, grid[r][c]));
+                } else if (grid[r][c].isFlagged()) {
+                    responses.add(new PlayResponse.CellResponse(r, c, new Cell().setFlagged(true)));
+                }
+            }
+        }
+        return responses;
+    }
+
+    private List<PlayResponse.CellResponse> getAllGrid() {
+        List<PlayResponse.CellResponse> responses = new ArrayList<>();
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                responses.add(new PlayResponse.CellResponse(r, c, grid[r][c]));
+            }
+        }
+        return responses;
+    }
+
     private int getNbFlagAround(int row, int col){
         int nbFlagsAround = 0;
         for (int i = -1; i <= 1; i++) {
@@ -202,18 +226,9 @@ public class Multisweeper {
         return List.of(new PlayResponse.CellResponse(row, col, new Cell().setFlagged(cell.isFlagged())));
     }
 
-    public List<PlayResponse.CellResponse> getVisibleGrid() {
-        List<PlayResponse.CellResponse> responses = new ArrayList<>();
-        for (int r = 0; r < rows; r++) {
-            for (int c = 0; c < cols; c++) {
-                if (grid[r][c].isVisible()) {
-                    responses.add(new PlayResponse.CellResponse(r, c, grid[r][c]));
-                } else if (grid[r][c].isFlagged()) {
-                    responses.add(new PlayResponse.CellResponse(r, c, new Cell().setFlagged(true)));
-                }
-            }
-        }
-        return responses;
+    public List<PlayResponse.CellResponse> getGrid() {
+        if(isGameEnded) return getAllGrid();
+        else return getVisibleGrid();
     }
 
     public void checkGameWin() {

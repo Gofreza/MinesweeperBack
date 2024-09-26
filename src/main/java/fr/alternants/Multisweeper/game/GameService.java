@@ -21,6 +21,7 @@ public class GameService {
         multisweeper.checkGameWin();
         playResponse.setIsGameWin(multisweeper.isGameWin());
         playResponse.setIsGameEnded(multisweeper.isGameEnded());
+
     }
 
     public Integer newGame(NewGameRequest newGameRequest) {
@@ -70,7 +71,7 @@ public class GameService {
     public List<PlayResponse.CellResponse> getGrid(Integer roomId) {
         if (soloGames.containsKey(roomId)) {
             Multisweeper multisweeper = soloGames.get(roomId);
-            return multisweeper.getVisibleGrid();
+            return multisweeper.getGrid();
         }
         return null;
     }
