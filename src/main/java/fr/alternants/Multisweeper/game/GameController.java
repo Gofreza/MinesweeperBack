@@ -38,7 +38,7 @@ public class GameController {
         return ResponseEntity.ok(playResponse);
     }
 
-    @GetMapping()
+    @PostMapping("/get")
     public ResponseEntity<PlayResponse> getGrid(@RequestBody PlayRequest playRequest) {
         System.out.println("Get grid, roomId: " + playRequest.getRoomId());
         List<PlayResponse.CellResponse> cellResponses = gameService.getGrid(playRequest.getRoomId());
