@@ -33,9 +33,9 @@ public class WSGameController {
 
     @MessageMapping("/flag")
     @SendTo("/topic/game")
-    public PlayResponse.CellResponse flag(@RequestBody PlayRequest playRequest) {
+    public PlayResponse flag(@RequestBody PlayRequest playRequest) {
         System.out.println("Flag request: " + playRequest);
-        return gameService.flag(playRequest);
+        return new PlayResponse(List.of(gameService.flag(playRequest)), false, false);
     }
 
     @MessageMapping("/grid")
