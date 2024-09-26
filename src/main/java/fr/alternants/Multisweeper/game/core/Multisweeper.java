@@ -2,12 +2,14 @@ package fr.alternants.Multisweeper.game.core;
 
 import fr.alternants.Multisweeper.game.PlayResponse;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 @Data
+@Slf4j
 public class Multisweeper {
     private static Cell[][] getGrid(int rows, int cols, Difficulty difficulty) {
         Cell[][] cells = new Cell[rows][cols];
@@ -97,6 +99,24 @@ public class Multisweeper {
         }
     }
 
+    private Cell setVisible(int row, int col) {
+        Cell cell = grid[row][col];
+        if(!cell.isVisible()) {
+            cell.setVisible(true);
+            cellsRevealed++;
+        }
+        return cell;
+    }
+
+    private Cell setExploded(int row, int col) {
+        Cell cell = grid[row][col];
+        cell.setExploded(true); // Loose
+        cell.setVisible(true);
+        bombsExplosion++;
+        isGameEnded = true;
+        return cell;
+    }
+
     private int getNbFlagAround(int row, int col){
         int nbFlagsAround = 0;
         for (int i = -1; i <= 1; i++) {
@@ -110,15 +130,15 @@ public class Multisweeper {
                 }
             }
         }
+        log.info("Nb flags around: " + nbFlagsAround + " for cell " + row + " " + col + " with " + grid[row][col].getBombAround() + " bombs around");
         return nbFlagsAround;
     }
 
     private void propagate(int row, int col, List<PlayResponse.CellResponse> responses) {
-        grid[row][col].setVisible(true);
-        cellsRevealed++;
-        responses.add(new PlayResponse.CellResponse(row, col, grid[row][col]));
+        log.info("Propagate on cell " + row + " " + col);
+        responses.add(new PlayResponse.CellResponse(row, col, setVisible(row, col)));
 
-        if (grid[row][col].getBombAround() == 0) for (int i = -1; i <= 1; i++) {
+        if(grid[row][col].getBombAround() == 0) for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
                 int newRow = row + i;
                 int newCol = col + j;
@@ -131,27 +151,40 @@ public class Multisweeper {
         }
     }
 
+    private void revealAllAround(int row, int col, List<PlayResponse.CellResponse> responses) {
+        log.info("Reveal all cells around " + row + " " + col);
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                int newRow = row + i;
+                int newCol = col + j;
+                if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols) {
+                    if (!grid[newRow][newCol].isVisible() && !grid[newRow][newCol].isFlagged()) {
+                        setVisible(newRow, newCol);
+                        if(grid[newRow][newCol].isBomb()) setExploded(newRow, newCol);
+                        responses.add(new PlayResponse.CellResponse(newRow, newCol, grid[newRow][newCol]));
+                    }
+                }
+            }
+        }
+    }
 
     public List<PlayResponse.CellResponse> play(int row, int col) {
         List<PlayResponse.CellResponse> responses = new ArrayList<>();
         Cell cell = grid[row][col];
 
-        if(cell.isFlagged()) return responses; // Flagged, can't play
+        if (cell.isBomb()) { // Loose
+            responses.add(new PlayResponse.CellResponse(row, col, setExploded(row, col)));
+            return responses;
+        }
+        else if(cell.isFlagged()) return responses; // Flagged, can't play
         else if (cell.isVisible()) { // If visible, play if flag around else dont play
             if (cell.getBombAround() == 0) return responses; // No bomb around, no need to play
             else if (getNbFlagAround(row, col) < cell.getBombAround()) return responses; // Not enough flags around
-
+            else revealAllAround(row, col, responses);
         }
-        else if (cell.isBomb()) {
-            cell.setExplosed(true); // Loose
-            cell.setVisible(true);
-            bombsExplosion++;
-            isGameEnded = true;
-            responses.add(new PlayResponse.CellResponse(row, col, grid[row][col]));
-            return responses;
+        else {
+            propagate(row, col, responses);
         }
-
-        propagate(row, col, responses);
 
         return responses;
     }

@@ -11,11 +11,7 @@ public class Cell { // Default value : 0, null, false
     private int bombAround;
     private boolean isFlagged;
     private boolean isVisible;
-    private boolean isExplosed;
-
-    public boolean isEmpty(){
-        return !isBomb && bombAround == 0;
-    }
+    private boolean isExploded;
 
     @Override
     public String toString() {
