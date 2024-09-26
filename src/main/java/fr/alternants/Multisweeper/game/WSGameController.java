@@ -45,7 +45,7 @@ public class WSGameController {
         List<PlayResponse.CellResponse> cellResponses = gameService.getGrid(roomId);
         return new PlayResponse(cellResponses, false, false);    }
 
-    @MessageMapping("/grid")
+    @MessageMapping("/delete")
     @SendTo("/topic/game")
     public String deleteROom(@RequestBody Integer roomId) {
         System.out.println("Get grid, roomId: " + roomId);
