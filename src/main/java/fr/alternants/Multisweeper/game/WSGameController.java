@@ -40,8 +40,16 @@ public class WSGameController {
 
     @MessageMapping("/grid")
     @SendTo("/topic/game")
-    public List<PlayResponse.CellResponse> getGrid(@RequestBody Integer roomId) {
+    public PlayResponse getGrid(@RequestBody Integer roomId) {
         System.out.println("Get grid, roomId: " + roomId);
-        return gameService.getGrid(roomId);
+        List<PlayResponse.CellResponse> cellResponses = gameService.getGrid(roomId);
+        return new PlayResponse(cellResponses, false, false);    }
+
+    @MessageMapping("/grid")
+    @SendTo("/topic/game")
+    public String deleteROom(@RequestBody Integer roomId) {
+        System.out.println("Get grid, roomId: " + roomId);
+        gameService.deleteRoom(roomId);
+        return "Delete successful";
     }
 }

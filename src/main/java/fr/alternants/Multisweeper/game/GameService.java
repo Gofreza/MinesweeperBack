@@ -75,4 +75,8 @@ public class GameService {
         }
         return null;
     }
+
+    public void deleteRoom(Integer roomId) {
+        soloGames.remove(roomId);
+    }
 }

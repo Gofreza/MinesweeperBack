@@ -46,4 +46,11 @@ public class GameController {
 
         return ResponseEntity.ok(new PlayResponse(cellResponses, false, false));
     }
+
+    @DeleteMapping()
+    public ResponseEntity<String> deleteRoom(@RequestBody PlayRequest playRequest) {
+        System.out.println("Delete room, roomId: " + playRequest.getRoomId());
+        gameService.deleteRoom(playRequest.getRoomId());
+        return ResponseEntity.ok("Delete successful");
+    }
 }
