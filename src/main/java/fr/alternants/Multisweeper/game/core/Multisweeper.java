@@ -158,10 +158,12 @@ public class Multisweeper {
                 int newRow = row + i;
                 int newCol = col + j;
                 if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols) {
-                    if (!grid[newRow][newCol].isVisible() && !grid[newRow][newCol].isFlagged()) {
+                    Cell cell = grid[newRow][newCol];
+                    if (!cell.isVisible() && !cell.isFlagged()) {
                         setVisible(newRow, newCol);
-                        if(grid[newRow][newCol].isBomb()) setExploded(newRow, newCol);
-                        responses.add(new PlayResponse.CellResponse(newRow, newCol, grid[newRow][newCol]));
+                        if(cell.isBomb()) setExploded(newRow, newCol);
+                        else if(cell.getBombAround() == 0) propagate(newRow, newCol, responses);
+                        responses.add(new PlayResponse.CellResponse(newRow, newCol, cell));
                     }
                 }
             }
@@ -189,18 +191,15 @@ public class Multisweeper {
         return responses;
     }
 
-    public PlayResponse.CellResponse flag(int row, int col){
+    public List<PlayResponse.CellResponse> flag(int row, int col){
         Cell cell = grid[row][col];
-        if(cell.isVisible()) return new PlayResponse.CellResponse(row, col, cell); // Can't flag a visible cell
+        if(cell.isVisible()) return play(row, col); // Can't flag a visible cell, so play
 
         cell.setFlagged(!cell.isFlagged());
-        if(cell.isFlagged()) {
-            nbFlags++;
-            return new PlayResponse.CellResponse(row, col, new Cell().setFlagged(true));
-        } else {
-            nbFlags--;
-            return new PlayResponse.CellResponse(row, col, new Cell());
-        }
+        if(cell.isFlagged()) nbFlags++;
+        else nbFlags--;
+
+        return List.of(new PlayResponse.CellResponse(row, col, new Cell().setFlagged(cell.isFlagged())));
     }
 
     public List<PlayResponse.CellResponse> getVisibleGrid() {

@@ -2,6 +2,7 @@ package fr.alternants.Multisweeper.game;
 
 import fr.alternants.Multisweeper.game.core.Multisweeper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -10,11 +11,17 @@ import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class GameService {
     private final HashMap<Integer, Multisweeper> soloGames = new HashMap<>();
 
     private final Random rand = new Random();
 
+    private void checkWin(Multisweeper multisweeper, PlayResponse playResponse) {
+        multisweeper.checkGameWin();
+        playResponse.setIsGameWin(multisweeper.isGameWin());
+        playResponse.setIsGameEnded(multisweeper.isGameEnded());
+    }
 
     public Integer newGame(NewGameRequest newGameRequest) {
         Integer roomId;
@@ -41,18 +48,21 @@ public class GameService {
             PlayResponse playResponse = new PlayResponse();
             playResponse.setChangedCells(multisweeper.play(playRequest.getRow(), playRequest.getCol()));
 
-            multisweeper.checkGameWin();
-            playResponse.setIsGameWin(multisweeper.isGameWin());
-            playResponse.setIsGameEnded(multisweeper.isGameEnded());
+            checkWin(multisweeper, playResponse);
             return playResponse;
         }
         return null;
     }
 
-    public PlayResponse.CellResponse flag(PlayRequest playRequest) {
+    public PlayResponse flag(PlayRequest playRequest) {
         if (playRequest.getPlayerId() == null) {
             Multisweeper multisweeper = soloGames.get(playRequest.getRoomId());
-            return multisweeper.flag(playRequest.getRow(), playRequest.getCol());
+
+            PlayResponse playResponse = new PlayResponse();
+            playResponse.setChangedCells(multisweeper.flag(playRequest.getRow(), playRequest.getCol()));
+
+            checkWin(multisweeper, playResponse);
+            return playResponse;
         }
         return null;
     }

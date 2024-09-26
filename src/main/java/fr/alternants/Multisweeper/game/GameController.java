@@ -33,9 +33,9 @@ public class GameController {
     @PostMapping("/flag")
     public ResponseEntity<PlayResponse> flag(@RequestBody PlayRequest playRequest) {
         System.out.println("Flag request: " + playRequest);
-        PlayResponse.CellResponse flag = gameService.flag(playRequest);
-        if(flag == null) return ResponseEntity.badRequest().build();
-        return ResponseEntity.ok(new PlayResponse(List.of(flag), false, false));
+        PlayResponse playResponse = gameService.flag(playRequest);
+        if(playResponse == null) return ResponseEntity.badRequest().build();
+        return ResponseEntity.ok(playResponse);
     }
 
     @GetMapping()
