@@ -49,7 +49,7 @@ public class GameService {
     }
 
     public ResponseEntity<Boolean> flag(PlayRequest playRequest) {
-        if (playRequest.getPlayerId() != null) {
+        if (playRequest.getPlayerId() == null) {
             Multisweeper multisweeper = soloGames.get(playRequest.getRoomId());
             return ResponseEntity.ok(multisweeper.flag(playRequest.getRow(), playRequest.getCol()));
         }
