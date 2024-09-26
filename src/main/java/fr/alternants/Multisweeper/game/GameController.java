@@ -39,10 +39,11 @@ public class GameController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<PlayResponse.CellResponse>> getGrid(@RequestBody Integer roomId) {
-        System.out.println("Get grid, roomId: " + roomId);
-        List<PlayResponse.CellResponse> cellResponses = gameService.getGrid(roomId);
+    public ResponseEntity<PlayResponse> getGrid(@RequestBody PlayRequest playRequest) {
+        System.out.println("Get grid, roomId: " + playRequest.getRoomId());
+        List<PlayResponse.CellResponse> cellResponses = gameService.getGrid(playRequest.getRoomId());
         if(cellResponses == null) return ResponseEntity.badRequest().build();
-        return ResponseEntity.ok(cellResponses);
+
+        return ResponseEntity.ok(new PlayResponse(cellResponses, false, false));
     }
 }
