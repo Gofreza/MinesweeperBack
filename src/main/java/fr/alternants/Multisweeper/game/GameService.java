@@ -37,8 +37,10 @@ public class GameService {
     public PlayResponse play(PlayRequest playRequest) {
         if (playRequest.getPlayerId() == null) {
             Multisweeper multisweeper = soloGames.get(playRequest.getRoomId());
+
             PlayResponse playResponse = new PlayResponse();
             playResponse.setChangedCells(multisweeper.play(playRequest.getRow(), playRequest.getCol()));
+
             multisweeper.checkGameWin();
             playResponse.setIsGameWin(multisweeper.isGameWin());
             playResponse.setIsGameEnded(multisweeper.isGameEnded());

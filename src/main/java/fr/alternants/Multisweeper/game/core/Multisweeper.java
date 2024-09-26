@@ -97,6 +97,21 @@ public class Multisweeper {
         }
     }
 
+    private int getNbFlagAround(int row, int col){
+        int nbFlagsAround = 0;
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                int newRow = row + i;
+                int newCol = col + j;
+                if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols) {
+                    if (grid[newRow][newCol].isFlagged()) {
+                        nbFlagsAround++;
+                    }
+                }
+            }
+        }
+        return nbFlagsAround;
+    }
 
     private void propagate(int row, int col, List<PlayResponse.CellResponse> responses) {
         grid[row][col].setVisible(true);
@@ -121,7 +136,12 @@ public class Multisweeper {
         List<PlayResponse.CellResponse> responses = new ArrayList<>();
         Cell cell = grid[row][col];
 
-        if(cell.isVisible() || cell.isFlagged()) return responses; // Already played or can't play
+        if(cell.isFlagged()) return responses; // Flagged, can't play
+        else if (cell.isVisible()) { // If visible, play if flag around else dont play
+            if (cell.getBombAround() == 0) return responses; // No bomb around, no need to play
+            else if (getNbFlagAround(row, col) < cell.getBombAround()) return responses; // Not enough flags around
+
+        }
         else if (cell.isBomb()) {
             cell.setExplosed(true); // Loose
             cell.setVisible(true);
