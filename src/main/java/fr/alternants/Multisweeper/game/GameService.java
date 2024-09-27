@@ -14,7 +14,7 @@ import java.util.Random;
 @RequiredArgsConstructor
 @Slf4j
 public class GameService {
-    private final HashMap<Integer, Solosweeper> soloGames = new HashMap<>();
+    public final HashMap<Integer, Solosweeper> soloGames = new HashMap<>();
 
     private final HashMap<Integer, Multisweeper> multiGames = new HashMap<>();
 

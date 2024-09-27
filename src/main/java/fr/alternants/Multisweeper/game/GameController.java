@@ -14,13 +14,6 @@ public class GameController {
 
     private final GameService gameService;
 
-    @MessageMapping("/new")
-    @SendTo("/topic/game")
-    public NewGameResponse newGame(@Payload NewGameRequest newGameRequest) {
-        System.out.println("New game request: " + newGameRequest);
-        return gameService.newGame(newGameRequest);
-    }
-
 
     @MessageMapping("/play")
     @SendTo("/topic/game")
@@ -42,7 +35,7 @@ public class GameController {
     public PlayResponse getGrid(@Payload Integer roomId) {
         System.out.println("Get grid, roomId: " + roomId);
         List<PlayResponse.CellResponse> cellResponses = gameService.getGrid(roomId);
-        return new PlayResponse(cellResponses, false, false, roomId, "");
+        return new PlayResponse(cellResponses, gameService.soloGames.get(roomId).isGameEnded(), gameService.soloGames.get(roomId).isGameWin(), roomId, "");
     }
 
     @MessageMapping("/delete")
