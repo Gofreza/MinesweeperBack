@@ -1,56 +1,54 @@
 package fr.alternants.Multisweeper.game;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.stereotype.Controller;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/game")
-@CrossOrigin(origins = "http://localhost:5173")
+@Controller
 @RequiredArgsConstructor
 public class GameController {
 
     private final GameService gameService;
 
-    @PostMapping("/new")
-    public ResponseEntity<Integer> newGame(@RequestBody NewGameRequest newGameRequest) {
+    @MessageMapping("/new")
+    @SendTo("/topic/game")
+    public Integer newGame(@Payload NewGameRequest newGameRequest) {
         System.out.println("New game request: " + newGameRequest);
-        Integer roomId = gameService.newGame(newGameRequest);
-        if(roomId == null) return ResponseEntity.badRequest().build();
-        return ResponseEntity.ok(roomId);
+        return gameService.newGame(newGameRequest);
     }
 
-    @PostMapping("/play")
-    public ResponseEntity<PlayResponse> play(@RequestBody PlayRequest playRequest) {
+
+    @MessageMapping("/play")
+    @SendTo("/topic/game")
+    public PlayResponse play(@Payload PlayRequest playRequest) {
         System.out.println("Play request: " + playRequest);
-        PlayResponse playResponse = gameService.play(playRequest);
-        if(playResponse == null) return ResponseEntity.badRequest().build();
-        return ResponseEntity.ok(playResponse);
+        return gameService.play(playRequest);
     }
 
-    @PostMapping("/flag")
-    public ResponseEntity<PlayResponse> flag(@RequestBody PlayRequest playRequest) {
+
+    @MessageMapping("/flag")
+    @SendTo("/topic/game")
+    public PlayResponse flag(@Payload PlayRequest playRequest) {
         System.out.println("Flag request: " + playRequest);
-        PlayResponse playResponse = gameService.flag(playRequest);
-        if(playResponse == null) return ResponseEntity.badRequest().build();
-        return ResponseEntity.ok(playResponse);
+        return gameService.flag(playRequest);
     }
 
-    @PostMapping("/get")
-    public ResponseEntity<PlayResponse> getGrid(@RequestBody PlayRequest playRequest) {
-        System.out.println("Get grid, roomId: " + playRequest.getRoomId());
-        List<PlayResponse.CellResponse> cellResponses = gameService.getGrid(playRequest.getRoomId());
-        if(cellResponses == null) return ResponseEntity.badRequest().build();
+    @MessageMapping("/grid")
+    @SendTo("/topic/game")
+    public PlayResponse getGrid(@Payload Integer roomId) {
+        System.out.println("Get grid, roomId: " + roomId);
+        List<PlayResponse.CellResponse> cellResponses = gameService.getGrid(roomId);
+        return new PlayResponse(cellResponses, false, false);    }
 
-        return ResponseEntity.ok(new PlayResponse(cellResponses, false, false));
-    }
-
-    @DeleteMapping()
-    public ResponseEntity<String> deleteRoom(@RequestBody PlayRequest playRequest) {
-        System.out.println("Delete room, roomId: " + playRequest.getRoomId());
-        gameService.deleteRoom(playRequest.getRoomId());
-        return ResponseEntity.ok("Delete successful");
+    @MessageMapping("/delete")
+    @SendTo("/topic/game")
+    public String deleteRoom(@Payload Integer roomId) {
+        System.out.println("Get grid, roomId: " + roomId);
+        gameService.deleteRoom(roomId);
+        return "Delete successful";
     }
 }
