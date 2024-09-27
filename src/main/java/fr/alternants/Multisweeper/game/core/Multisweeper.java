@@ -65,4 +65,7 @@ public class Multisweeper {
         return false;
     }
 
+    public Integer getNbBombs() {
+        return new Solosweeper(this.rows, this.cols, this.difficulty, this.baseGrid).getNbBombs();
+    }
 }

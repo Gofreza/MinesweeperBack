@@ -9,9 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PlayRequest {
-    private Integer row;
-    private Integer col;
-    private Integer roomId;
+public class NewGameResponse {
     private String username;
+    private Integer roomId;
+    private Integer bombNumber;
 }

@@ -15,4 +15,5 @@ public class NewGameRequest {
     private Integer cols;
     private Difficulty difficulty;
     private Boolean isMultiplayer;
+    private String username;
 }

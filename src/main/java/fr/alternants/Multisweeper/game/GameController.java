@@ -16,7 +16,7 @@ public class GameController {
 
     @MessageMapping("/new")
     @SendTo("/topic/game")
-    public Integer newGame(@Payload NewGameRequest newGameRequest) {
+    public NewGameResponse newGame(@Payload NewGameRequest newGameRequest) {
         System.out.println("New game request: " + newGameRequest);
         return gameService.newGame(newGameRequest);
     }
@@ -42,7 +42,8 @@ public class GameController {
     public PlayResponse getGrid(@Payload Integer roomId) {
         System.out.println("Get grid, roomId: " + roomId);
         List<PlayResponse.CellResponse> cellResponses = gameService.getGrid(roomId);
-        return new PlayResponse(cellResponses, false, false);    }
+        return new PlayResponse(cellResponses, false, false, roomId, "");
+    }
 
     @MessageMapping("/delete")
     @SendTo("/topic/game")

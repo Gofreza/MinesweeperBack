@@ -28,36 +28,41 @@ public class GameService {
     }
 
 
-
-    public Integer newGame(NewGameRequest newGameRequest) {
-        Integer roomId;
+    public NewGameResponse newGame(NewGameRequest newGameRequest) {
+        NewGameResponse newGameResponse = new NewGameResponse();
+        Integer roomId = rand.nextInt();
         if (newGameRequest.getIsMultiplayer()) {
-            return null;
+            Multisweeper multisweeper = new Multisweeper(newGameRequest.getRows(), newGameRequest.getCols(), newGameRequest.getDifficulty());
+            multiGames.put(roomId, multisweeper);
+            newGameResponse.setBombNumber(multisweeper.getNbBombs());
         } else {
-            roomId = rand.nextInt();
-            if(newGameRequest.getIsMultiplayer()) multiGames.put(roomId, new Multisweeper(newGameRequest.getRows(), newGameRequest.getCols(), newGameRequest.getDifficulty()));
-            else soloGames.put(roomId, new Solosweeper(newGameRequest.getRows(), newGameRequest.getCols(), newGameRequest.getDifficulty()));
-
-            System.out.println("New game created with roomId: " + roomId + " Multiplayer: " + newGameRequest.getIsMultiplayer());
-            return roomId;
+            soloGames.put(roomId, new Solosweeper(newGameRequest.getRows(), newGameRequest.getCols(), newGameRequest.getDifficulty()));
+            newGameResponse.setBombNumber(soloGames.get(roomId).getNbBombs());
         }
+
+
+
+        newGameResponse.setRoomId(roomId);
+        newGameResponse.setUsername(newGameRequest.getUsername());
+        System.out.println("New game created : " + newGameResponse + " Multiplayer: " + newGameRequest.getIsMultiplayer());
+        return newGameResponse;
+
     }
 
 
     public PlayResponse play(PlayRequest playRequest) {
         PlayResponse playResponse = new PlayResponse();
         Solosweeper solosweeper;
-        if (playRequest.getPlayerId() == null && soloGames.containsKey(playRequest.getRoomId())) {
+        if (playRequest.getUsername() == null && soloGames.containsKey(playRequest.getRoomId())) {
             solosweeper = soloGames.get(playRequest.getRoomId());
 
-
-        }
-        else if (playRequest.getPlayerId() != null && multiGames.containsKey(playRequest.getRoomId()) && multiGames.get(playRequest.getRoomId()).getGames().containsKey(playRequest.getPlayerId())) {
-            solosweeper = multiGames.get(playRequest.getRoomId()).getGames().get(playRequest.getPlayerId());
-        }
-        else return null;
+        } else if (playRequest.getUsername() != null && multiGames.containsKey(playRequest.getRoomId()) && multiGames.get(playRequest.getRoomId()).getGames().containsKey(playRequest.getUsername())) {
+            solosweeper = multiGames.get(playRequest.getRoomId()).getGames().get(playRequest.getUsername());
+            playResponse.setUsername(playRequest.getUsername());
+        } else return null;
 
         playResponse.setChangedCells(solosweeper.play(playRequest.getRow(), playRequest.getCol()));
+        playResponse.setRoomId(playRequest.getRoomId());
 
         checkWin(solosweeper, playResponse);
         return playResponse;
@@ -66,17 +71,17 @@ public class GameService {
     public PlayResponse flag(PlayRequest playRequest) {
         PlayResponse playResponse = new PlayResponse();
         Solosweeper solosweeper;
-        if (playRequest.getPlayerId() == null && soloGames.containsKey(playRequest.getRoomId())) {
+        if (playRequest.getUsername() == null && soloGames.containsKey(playRequest.getRoomId())) {
             solosweeper = soloGames.get(playRequest.getRoomId());
 
 
-        }
-        else if (playRequest.getPlayerId() != null && multiGames.containsKey(playRequest.getRoomId()) && multiGames.get(playRequest.getRoomId()).getGames().containsKey(playRequest.getPlayerId())) {
-            solosweeper = multiGames.get(playRequest.getRoomId()).getGames().get(playRequest.getPlayerId());
-        }
-        else return null;
+        } else if (playRequest.getUsername() != null && multiGames.containsKey(playRequest.getRoomId()) && multiGames.get(playRequest.getRoomId()).getGames().containsKey(playRequest.getUsername())) {
+            solosweeper = multiGames.get(playRequest.getRoomId()).getGames().get(playRequest.getUsername());
+            playResponse.setUsername(playRequest.getUsername());
+        } else return null;
 
         playResponse.setChangedCells(solosweeper.flag(playRequest.getRow(), playRequest.getCol()));
+        playResponse.setRoomId(playRequest.getRoomId());
 
         checkWin(solosweeper, playResponse);
         return playResponse;
@@ -86,8 +91,7 @@ public class GameService {
         if (soloGames.containsKey(roomId)) {
             Solosweeper solosweeper = soloGames.get(roomId);
             return solosweeper.getGrid();
-        }
-        else if (multiGames.containsKey(roomId)) {
+        } else if (multiGames.containsKey(roomId)) {
             Multisweeper multisweeper = multiGames.get(roomId);
             return null;
         }

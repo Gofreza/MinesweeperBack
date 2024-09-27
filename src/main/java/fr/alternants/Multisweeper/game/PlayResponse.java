@@ -26,4 +26,6 @@ public class PlayResponse {
     private List<CellResponse> changedCells;
     private Boolean isGameEnded;
     private Boolean isGameWin;
+    private Integer roomId;
+    private String username;
 }
