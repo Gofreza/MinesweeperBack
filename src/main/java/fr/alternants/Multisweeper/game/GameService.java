@@ -46,7 +46,7 @@ public class GameService {
 
     public PlayResponse play(PlayRequest playRequest) {
         PlayResponse playResponse = new PlayResponse();
-        Solosweeper solosweeper = null;
+        Solosweeper solosweeper;
         if (playRequest.getPlayerId() == null && soloGames.containsKey(playRequest.getRoomId())) {
             solosweeper = soloGames.get(playRequest.getRoomId());
 
@@ -65,7 +65,7 @@ public class GameService {
 
     public PlayResponse flag(PlayRequest playRequest) {
         PlayResponse playResponse = new PlayResponse();
-        Solosweeper solosweeper = null;
+        Solosweeper solosweeper;
         if (playRequest.getPlayerId() == null && soloGames.containsKey(playRequest.getRoomId())) {
             solosweeper = soloGames.get(playRequest.getRoomId());
 
