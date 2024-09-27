@@ -2,9 +2,6 @@ package fr.alternants.Multisweeper.game;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,5 +24,11 @@ public class GridController {
         System.out.println("Get grid, roomId: " + roomId);
         List<PlayResponse.CellResponse> cellResponses = gameService.getGrid(roomId);
         return ResponseEntity.ok(new PlayResponse(cellResponses, gameService.soloGames.get(roomId).isGameEnded(), gameService.soloGames.get(roomId).isGameWin(), roomId, "", "getGrid"));
+    }
+    @DeleteMapping()
+    public String deleteRoom(@RequestBody Integer roomId) {
+        System.out.println("Delete grid, roomId: " + roomId);
+        gameService.deleteRoom(roomId);
+        return "Delete successful";
     }
 }
