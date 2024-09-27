@@ -13,5 +13,5 @@ public class PlayRequest {
     private Integer row;
     private Integer col;
     private Integer roomId;
-    private Integer playerId;
+    private String playerId;
 }
