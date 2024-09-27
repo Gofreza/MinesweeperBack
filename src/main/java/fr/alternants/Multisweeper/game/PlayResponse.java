@@ -28,4 +28,5 @@ public class PlayResponse {
     private Boolean isGameWin;
     private Integer roomId;
     private String username;
+    private String typeResponse;
 }

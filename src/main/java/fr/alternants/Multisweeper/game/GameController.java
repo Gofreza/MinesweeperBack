@@ -35,7 +35,7 @@ public class GameController {
     public PlayResponse getGrid(@Payload Integer roomId) {
         System.out.println("Get grid, roomId: " + roomId);
         List<PlayResponse.CellResponse> cellResponses = gameService.getGrid(roomId);
-        return new PlayResponse(cellResponses, gameService.soloGames.get(roomId).isGameEnded(), gameService.soloGames.get(roomId).isGameWin(), roomId, "");
+        return new PlayResponse(cellResponses, gameService.soloGames.get(roomId).isGameEnded(), gameService.soloGames.get(roomId).isGameWin(), roomId, "", "getGrid");
     }
 
     @MessageMapping("/delete")

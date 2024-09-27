@@ -45,6 +45,7 @@ public class GameService {
         newGameResponse.setRoomId(roomId);
         newGameResponse.setUsername(newGameRequest.getUsername());
         System.out.println("New game created : " + newGameResponse + " Multiplayer: " + newGameRequest.getIsMultiplayer());
+        newGameResponse.setTypeResponse("newGame");
         return newGameResponse;
 
     }
@@ -65,6 +66,7 @@ public class GameService {
         playResponse.setRoomId(playRequest.getRoomId());
 
         checkWin(solosweeper, playResponse);
+        playResponse.setTypeResponse("play");
         return playResponse;
     }
 
@@ -84,6 +86,7 @@ public class GameService {
         playResponse.setRoomId(playRequest.getRoomId());
 
         checkWin(solosweeper, playResponse);
+        playResponse.setTypeResponse("flag");
         return playResponse;
     }
 

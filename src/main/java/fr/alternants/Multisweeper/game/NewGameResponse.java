@@ -13,4 +13,5 @@ public class NewGameResponse {
     private String username;
     private Integer roomId;
     private Integer bombNumber;
+    private String typeResponse;
 }
